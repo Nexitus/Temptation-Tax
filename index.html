@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <link rel="icon" type="image/svg+xml"
+    href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>💰</text></svg>" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description"
+    content="Temptation Tax - Transform your materialistic desires into long-term savings. Log impulses, calculate your tax, and watch your wealth grow with compound interest." />
+  <meta name="theme-color" content="#0d0e12" />
+
+  <!-- Open Graph / Facebook -->
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="Temptation Tax — Every impulse has a price" />
+  <meta property="og:description"
+    content="Make your impulses pay you. Every resisted desire is an investment in your future self." />
+  <meta property="og:image" content="/og-image.png" />
+
+  <!-- Twitter -->
+  <meta property="twitter:card" content="summary_large_image" />
+  <meta property="twitter:title" content="Temptation Tax — Every impulse has a price" />
+  <meta property="twitter:description" content="Transform materialistic desires into compound growth." />
+
+  <title>Temptation Tax — Every impulse has a price</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;800&family=Manrope:wght@400;600;700&display=swap" rel="stylesheet">
+  
+  <!-- Optimization: Connection Pre-fetching for Firebase -->
+  <link rel="dns-prefetch" href="https://firestore.googleapis.com">
+  <link rel="dns-prefetch" href="https://www.googleapis.com">
+  <link rel="dns-prefetch" href="https://identitytoolkit.googleapis.com">
+</head>
+
+<body>
+  <div id="loading-overlay"
+    style="position: fixed; inset: 0; background: #0d0e12; display: flex; align-items: center; justify-content: center; z-index: 1000; transition: opacity 0.5s ease;">
+    <div class="title-gradient" style="font-size: 2rem; animation: pulse 2s infinite;">Initializing...</div>
+  </div>
+
+  <div id="auth-overlay"
+    style="position: fixed; inset: 0; background: #0d0e12; display: none; flex-direction: column; align-items: center; justify-content: center; z-index: 900; text-align: center; padding: 2rem;">
+    <h1 class="title-gradient" style="font-size: 3rem; margin-bottom: 1rem;">Temptation Tax</h1>
+    <p class="muted" style="margin-bottom: 2.5rem; max-width: 400px;">Transform your materialistic desires into
+      long-term savings. Login to start building your wealth.</p>
+    <button id="main-login-btn" class="btn-primary" style="max-width: 300px;">Sign in with Google</button>
+  </div>
+
+  <div id="app" style="opacity: 0; transition: opacity 0.5s ease;">
+    <!-- Web App Navigation with logo -->
+    <header id="stats-bar-container"></header>
+
+    <main class="container">
+      <!-- Content / Value Prop -->
+      <section id="hero" class="glass-card">
+        <h1 class="title-gradient">Temptation Tax</h1>
+        <p class="muted">Make your impulses pay you. Every resisted desire is an investment in your future self.</p>
+      </section>
+
+      <div class="main-grid stagger-in">
+        <!-- Sidebar: User Inputs & CTA Buttons -->
+        <aside class="sidebar">
+          <div id="temptation-form-container"></div>
+          <div id="weekly-list-container"></div>
+        </aside>
+
+        <!-- Main: Charts / Dashboard -->
+        <article class="content">
+          <div id="savings-dashboard-container"></div>
+          <div id="settings-panel-container"></div>
+        </article>
+      </div>
+    </main>
+
+    <!-- Footer -->
+    <footer id="footer-container"></footer>
+  </div>
+  <script type="module" src="/src/main.js"></script>
+</body>
+
+</html>
