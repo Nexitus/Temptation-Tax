@@ -76,13 +76,14 @@
   - `listenToTemptations(uid, callback)` → `onSnapshot(collection(...))` — returns unsubscribe fn
   - `listenToDeposits(uid, callback)` → same pattern
   - `listenToSettings(uid, callback)` → `onSnapshot(doc(...))` — passes `null` if doc doesn't exist
-  - `addTemptation(uid, item)` → `addDoc` with `weekId: getCurrentWeekId()` injected server-side
+  - `addTemptation(uid, item)` → `addDoc` with `weekId: getCurrentWeekId()` injected; `id` field is destructured out of `item` before writing to Firestore to prevent fake temp IDs from being stored as document data
   - `processConfirmation(uid, amount, items, interestRate)` → `writeBatch` with deposit set + item deletes
   - `deleteTemptation(uid, itemId)` → `deleteDoc`
   - `resetData(uid)` → `getDocs` both collections, chunk into batches of 500, commit each
 - **Edge Cases Handled:**
   - `items.map(i => ({ ..., taxAmount: i.taxAmount || (i.price * 0.1) }))` — backward-compatible fallback for older items without `taxAmount` when storing deposit item summaries
   - Listeners return their unsubscribe functions — `main.js` stores these in `state.unsubscribes` and calls all on auth state change to prevent memory leaks and duplicate listeners
+  - `{ ...doc.data(), id: doc.id }` — `id: doc.id` is placed **after** the data spread in all listeners so the real Firestore document ID always wins, even if a stale `id` field exists in the document data
 - **Known Limitations:**
   - No Firestore security rules are defined in this codebase (rules managed separately in Firebase console)
   - `resetData` deletes in series (awaits each chunk), not parallel — could be parallelized with `Promise.all` for large datasets

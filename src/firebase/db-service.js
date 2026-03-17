@@ -15,7 +15,7 @@ import { getCurrentWeekId } from '../utils/week-helpers';
 export function listenToTemptations(uid, callback) {
     return onSnapshot(collection(db, `users/${uid}/temptations`), (snapshot) => {
         const items = [];
-        snapshot.forEach(doc => items.push({ id: doc.id, ...doc.data() }));
+        snapshot.forEach(doc => items.push({ ...doc.data(), id: doc.id }));
         callback(items);
     });
 }
@@ -23,7 +23,7 @@ export function listenToTemptations(uid, callback) {
 export function listenToDeposits(uid, callback) {
     return onSnapshot(collection(db, `users/${uid}/deposits`), (snapshot) => {
         const items = [];
-        snapshot.forEach(doc => items.push({ id: doc.id, ...doc.data() }));
+        snapshot.forEach(doc => items.push({ ...doc.data(), id: doc.id }));
         callback(items);
     });
 }
@@ -39,8 +39,9 @@ export function listenToSettings(uid, callback) {
 }
 
 export async function addTemptation(uid, item) {
+    const { id: _discarded, ...itemData } = item;
     return addDoc(collection(db, `users/${uid}/temptations`), {
-        ...item,
+        ...itemData,
         weekId: getCurrentWeekId(),
         createdAt: new Date().toISOString()
     });
