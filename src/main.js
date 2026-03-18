@@ -11,8 +11,9 @@ import { calculateCompoundInterest } from './utils/compound-interest.js';
 import { animateNumber } from './utils/animate-numbers.js';
 import { showToast } from './utils/toast.js';
 
+import { formatCurrency } from './utils/week-helpers.js';
 import { auth, googleProvider } from './firebase/config';
-import { signInAnonymously, onAuthStateChanged, signInWithPopup, linkWithCredential, GoogleAuthProvider, signOut, linkWithPopup } from 'firebase/auth';
+import { signInAnonymously, onAuthStateChanged, signInWithPopup, signOut } from 'firebase/auth';
 import confetti from 'canvas-confetti';
 
 import {
@@ -77,10 +78,7 @@ function updateOverallStats() {
     // Animate the main saved number in the bar
     const savedEl = mounts.statsBar.querySelector('.stats-pill:first-child span:last-child');
     if (savedEl && totalSaved !== state.previousTotalSaved) {
-        animateNumber(savedEl, state.previousTotalSaved, totalSaved, 1000, v => {
-            const formatter = new Intl.NumberFormat(undefined, { style: 'currency', currency });
-            return formatter.format(v);
-        });
+        animateNumber(savedEl, state.previousTotalSaved, totalSaved, 1000, v => formatCurrency(v, currency));
     }
 
     renderSettingsPanel();
@@ -216,10 +214,7 @@ async function handleResetData() {
 
 async function handleSignIn() {
   try {
-    const result = await signInWithPopup(auth, googleProvider);
-    if (state.user?.isAnonymous) {
-      // Logic for linking would go here if needed
-    }
+    await signInWithPopup(auth, googleProvider);
   } catch (err) {
     console.error(err);
     showToast('Login failed.', 'error');

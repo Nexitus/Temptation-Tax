@@ -50,9 +50,10 @@ export function getWeekLabel(offset) {
     return `${Math.abs(offset)} Weeks Ago`;
 }
 
+const _formatters = {};
 export function formatCurrency(amount, currency = 'USD') {
-    return new Intl.NumberFormat('en-US', {
-        style: 'currency',
-        currency: currency
-    }).format(amount);
+    if (!_formatters[currency]) {
+        _formatters[currency] = new Intl.NumberFormat('en-US', { style: 'currency', currency });
+    }
+    return _formatters[currency].format(amount);
 }

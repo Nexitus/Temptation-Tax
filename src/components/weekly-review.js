@@ -79,8 +79,7 @@ export function renderWeeklyReview(container, temptations, settings, onConfirm, 
   // Helper to get tax for an item (handles backward compatibility)
   const getTax = (t) => {
     if (t.taxAmount !== undefined) return t.taxAmount;
-    // Fallback for older items
-    return t.price * settings.taxRate;
+    return t.price * (t.purchased ? settings.purchaseTaxRate : settings.taxRate);
   };
 
   // Temptations for the currently viewed week

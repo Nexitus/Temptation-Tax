@@ -278,6 +278,7 @@ export function renderDashboard(container, stats) {
   const projectedDisplay = document.getElementById('projected-value');
   const interestLabel = document.getElementById('interest-earned-tag');
   const projectedLegend = document.getElementById('projected-legend');
+  const ticks = container.querySelectorAll('#slider-ticks span');
 
   const updateUIAndChart = (isFinal = false) => {
     const index = parseInt(slider.value);
@@ -304,7 +305,6 @@ export function renderDashboard(container, stats) {
     projectedDisplay.textContent = formatCurrency(totalFV, currency);
     interestLabel.textContent = `+ ${formatCurrency(Math.max(0, totalInterestEarned), currency)} total interest`;
 
-    const ticks = document.querySelectorAll('#slider-ticks span');
     ticks.forEach((tick, i) => { tick.style.color = i === index ? 'var(--primary-color)' : ''; tick.style.opacity = i === index ? '1' : '0.4'; });
 
     if (t === 0) {

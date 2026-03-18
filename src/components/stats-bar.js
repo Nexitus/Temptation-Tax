@@ -1,6 +1,9 @@
 import { formatCurrency } from '../utils/week-helpers.js';
 
+let _dropdownController = null;
+
 export function renderStatsBar(container, stats, onSignIn, onSignOut) {
+  if (_dropdownController) { _dropdownController.abort(); _dropdownController = null; }
   const isAnonymous = stats.user?.isAnonymous;
   const userPhoto = stats.user?.photoURL;
   const userName = stats.user?.displayName;
@@ -70,23 +73,23 @@ export function renderStatsBar(container, stats, onSignIn, onSignOut) {
   if (syncBtn) syncBtn.addEventListener('click', onSignIn);
 
   if (userPill && dropdown) {
+    _dropdownController = new AbortController();
+    const { signal } = _dropdownController;
+
     userPill.addEventListener('click', (e) => {
       e.stopPropagation();
       const isVisible = dropdown.style.display === 'block';
       dropdown.style.display = isVisible ? 'none' : 'block';
       userPill.setAttribute('aria-expanded', !isVisible);
     });
+
+    document.addEventListener('click', (e) => {
+      if (!dropdown.contains(e.target) && !userPill.contains(e.target)) {
+        dropdown.style.display = 'none';
+        userPill.setAttribute('aria-expanded', 'false');
+      }
+    }, { signal });
   }
 
   if (signOutBtn) signOutBtn.addEventListener('click', onSignOut);
 }
-
-// Global click listener for dropdown dismissal
-document.addEventListener('click', (e) => {
-  const dropdown = document.getElementById('settings-dropdown');
-  const userPill = document.getElementById('user-pill');
-  if (dropdown && userPill && !dropdown.contains(e.target) && !userPill.contains(e.target)) {
-    dropdown.style.display = 'none';
-    userPill.setAttribute('aria-expanded', 'false');
-  }
-});

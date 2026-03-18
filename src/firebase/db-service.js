@@ -5,26 +5,23 @@ import {
     addDoc,
     doc,
     setDoc,
-    query,
     getDocs,
     deleteDoc,
     writeBatch
 } from 'firebase/firestore';
 import { getCurrentWeekId } from '../utils/week-helpers';
 
+const toArray = (snapshot) => snapshot.docs.map(d => ({ ...d.data(), id: d.id }));
+
 export function listenToTemptations(uid, callback) {
     return onSnapshot(collection(db, `users/${uid}/temptations`), (snapshot) => {
-        const items = [];
-        snapshot.forEach(doc => items.push({ ...doc.data(), id: doc.id }));
-        callback(items);
+        callback(toArray(snapshot));
     });
 }
 
 export function listenToDeposits(uid, callback) {
     return onSnapshot(collection(db, `users/${uid}/deposits`), (snapshot) => {
-        const items = [];
-        snapshot.forEach(doc => items.push({ ...doc.data(), id: doc.id }));
-        callback(items);
+        callback(toArray(snapshot));
     });
 }
 
@@ -94,6 +91,8 @@ export async function resetData(uid) {
         }
     };
 
-    await deleteInBatches(`users/${uid}/temptations`);
-    await deleteInBatches(`users/${uid}/deposits`);
+    await Promise.all([
+        deleteInBatches(`users/${uid}/temptations`),
+        deleteInBatches(`users/${uid}/deposits`)
+    ]);
 }

@@ -95,13 +95,7 @@ export function renderTemptationForm(container, settings, onSave) {
     const taxAmount = price * rate;
 
     try {
-      await onSave({
-        name,
-        price,
-        purchased,
-        taxAmount,
-        createdAt: new Date().toISOString()
-      });
+      await onSave({ name, price, purchased, taxAmount });
       form.reset();
       updatePreview();
     } finally {
