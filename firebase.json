@@ -18,13 +18,5 @@
         "destination": "/index.html"
       }
     ]
-  },
-  "auth": {
-    "providers": {
-      "googleSignIn": {
-        "oAuthBrandDisplayName": "Temptation Tax",
-        "supportEmail": "op.blam@gmail.com"
-      }
-    }
   }
 }
