@@ -1,6 +1,6 @@
 # Feature: Custom Deposit Confirmation Modal
 **Category:** Core
-**Status:** 📋 Planned
+**Status:** ✅ Built
 **Source:** `src/components/weekly-review.js`
 **Last Updated:** 2026-03-18
 

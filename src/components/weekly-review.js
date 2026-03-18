@@ -1,5 +1,75 @@
 import { formatCurrency, getWeekIdForOffset, getWeekRangeDisplayForOffset, getWeekLabel } from '../utils/week-helpers.js';
 
+async function showConfirmModal(amount, items, currency, onConfirmFn) {
+  return new Promise((resolve) => {
+    const displayItems = items.slice(0, 5);
+    const overflow = items.length - 5;
+
+    const overlay = document.createElement('div');
+    overlay.className = 'modal-overlay';
+    overlay.setAttribute('role', 'dialog');
+    overlay.setAttribute('aria-modal', 'true');
+    overlay.setAttribute('aria-labelledby', 'modal-title');
+
+    overlay.innerHTML = `
+      <div class="modal-box glass-card">
+        <p class="muted" style="font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; margin: 0 0 0.5rem;">Confirm Deposit</p>
+        <p id="modal-title" class="tabular-nums" style="font-size: 2.5rem; font-weight: 800; color: var(--primary-color); margin: 0 0 0.25rem;">${formatCurrency(amount, currency)}</p>
+        <p class="muted" style="margin: 0 0 1.5rem;">${items.length} item${items.length !== 1 ? 's' : ''} will be cleared</p>
+        <div class="modal-item-list">
+          ${displayItems.map(item => `
+            <div class="modal-item-row">
+              <span class="modal-item-name">${item.name}</span>
+              <span class="modal-item-amount">+${formatCurrency(item.taxAmount || 0, currency)}</span>
+            </div>
+          `).join('')}
+          ${overflow > 0 ? `<p class="modal-overflow">+ ${overflow} more item${overflow !== 1 ? 's' : ''}</p>` : ''}
+        </div>
+        <div class="modal-actions">
+          <button id="modal-confirm-btn" class="btn-primary">Confirm & Deposit</button>
+          <button id="modal-cancel-btn" class="btn-secondary">Cancel</button>
+        </div>
+      </div>
+    `;
+
+    document.body.appendChild(overlay);
+
+    const confirmBtn = overlay.querySelector('#modal-confirm-btn');
+    const cancelBtn = overlay.querySelector('#modal-cancel-btn');
+    cancelBtn.focus();
+
+    const doConfirm = async () => {
+      confirmBtn.disabled = true;
+      confirmBtn.textContent = 'Processing...';
+      cancelBtn.disabled = true;
+      document.removeEventListener('keydown', onKeydown);
+      try {
+        await onConfirmFn();
+        overlay.remove();
+        resolve(true);
+      } catch {
+        overlay.remove();
+        resolve(false);
+      }
+    };
+
+    const doCancel = () => {
+      document.removeEventListener('keydown', onKeydown);
+      overlay.remove();
+      resolve(false);
+    };
+
+    const onKeydown = (e) => {
+      if (e.key === 'Escape') doCancel();
+      else if (e.key === 'Enter') { e.preventDefault(); doConfirm(); }
+    };
+
+    document.addEventListener('keydown', onKeydown);
+    confirmBtn.addEventListener('click', doConfirm);
+    cancelBtn.addEventListener('click', doCancel);
+  });
+}
+
 export function renderWeeklyReview(container, temptations, settings, onConfirm, onDelete, state) {
   const weekOffset = state.weekOffset || 0;
   const currentWeekId = getWeekIdForOffset(weekOffset);
@@ -140,17 +210,13 @@ export function renderWeeklyReview(container, temptations, settings, onConfirm, 
 
   const btn = document.getElementById('confirm-deposit-btn');
   if (btn) {
-    btn.addEventListener('click', async () => {
-      if (confirm(`Confirm deposit of ${formatCurrency(totalConfirmTax, currency)} to your HISA? This will clear the displayed temptations.`)) {
-        btn.disabled = true;
-        btn.textContent = 'Processing...';
-        try {
-          await onConfirm(totalConfirmTax, itemsToConfirm);
-        } finally {
+    btn.addEventListener('click', () => {
+      btn.disabled = true;
+      showConfirmModal(totalConfirmTax, itemsToConfirm, currency, () => onConfirm(totalConfirmTax, itemsToConfirm))
+        .finally(() => {
           btn.disabled = false;
           btn.textContent = 'Confirm Deposit to HISA';
-        }
-      }
+        });
     });
   }
 
