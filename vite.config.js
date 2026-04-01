@@ -4,10 +4,16 @@ export default defineConfig({
   build: {
     rollupOptions: {
       output: {
-        manualChunks: {
-          'firebase-auth': ['firebase/app', 'firebase/auth'],
-          'firebase-firestore': ['firebase/firestore'],
-          chart: ['chart.js'],
+        manualChunks(id) {
+          if (id.includes('firebase/app') || id.includes('firebase/auth')) {
+            return 'firebase-auth';
+          }
+          if (id.includes('firebase/firestore')) {
+            return 'firebase-firestore';
+          }
+          if (id.includes('chart.js')) {
+            return 'chart';
+          }
         }
       }
     }
